@@ -1,0 +1,12 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Node/Frontend (Para quando o código do v0 chegar)
+node_modules/
+.next/
+out/
+build/
+.DS_Store
