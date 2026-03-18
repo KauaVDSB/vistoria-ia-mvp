@@ -6,6 +6,11 @@ from flask import request, jsonify, g
 def require_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
+        # --- LIBERAÇÃO DO PREFLIGHT DO CORS (VITAL PARA A VERCEL) ---
+        if request.method == 'OPTIONS':
+            return jsonify({}), 200
+        # -----------------------------------------------------------
+
         auth_header = request.headers.get("Authorization", "")
         if not auth_header.startswith("Bearer "):
             return jsonify({"error": "Token não fornecido ou mal formatado"}), 401
@@ -13,6 +18,10 @@ def require_auth(f):
         token = auth_header.split(" ", 1)[1]
         try:
             secret = os.getenv("SUPABASE_JWT_SECRET")
+            if not secret:
+                print("ERRO CRÍTICO: Variável SUPABASE_JWT_SECRET não encontrada no ambiente!")
+                return jsonify({"error": "Configuração do servidor ausente"}), 500
+
             payload = jwt.decode(
                 token,
                 secret,
@@ -23,7 +32,6 @@ def require_auth(f):
             g.user_email = payload.get("email", "")
 
             # MOCK DE ROLES (Conforme CLAUDE.md)
-            # Se for o e-mail do admin, ele é admin. Qualquer outro é staff.
             if g.user_email == "admin@teste.com":
                 g.user_role = "admin"
             else:
