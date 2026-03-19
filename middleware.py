@@ -17,10 +17,11 @@ def require_auth(f):
         token = auth_header.split(" ", 1)[1]
         
         try:
-            # PROTOCOLO DE EMERGÊNCIA: Lê o token sem travar na assinatura
+            # PROTOCOLO DE EMERGÊNCIA
             payload = jwt.decode(
                 token,
-                options={"verify_signature": False}
+                options={"verify_signature": False},
+                algorithms=["HS256"] # <--- FALTAVA ISSO PARA NÃO DAR ERRO 500
             )
             g.user_id = payload.get("sub", "anon")
             g.user_email = payload.get("email", "")
