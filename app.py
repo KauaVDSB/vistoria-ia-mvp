@@ -48,6 +48,15 @@ def create_app():
 # Instancia a aplicação usando o padrão Application Factory
 app = create_app()
 
+@app.route('/api/init-db', methods=['GET'])
+def init_db():
+    try:
+        with app.app_context():
+            db.create_all()
+        return jsonify({"message": "Tabelas criadas no Supabase com sucesso!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 if __name__ == '__main__':
     # Roda o servidor na porta 5000
     port = int(os.environ.get("PORT", 5000))

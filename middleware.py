@@ -21,7 +21,7 @@ def require_auth(f):
             payload = jwt.decode(
                 token,
                 options={"verify_signature": False},
-                algorithms=["HS256"] # <--- FALTAVA ISSO PARA NÃO DAR ERRO 500
+                algorithms=["HS256"]
             )
             g.user_id = payload.get("sub", "anon")
             g.user_email = payload.get("email", "")
